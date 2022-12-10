@@ -11,11 +11,11 @@ class HUCofeeShop{
 		int cashier;
 		int orders;
 		
-		queue<double> arrival_times;
-		queue<double> order_times;
-		queue<double> brew_times;
-		queue<double> prices;
-		queue<double> customer_times;
+		queue<int> arrival_times;
+		queue<int> order_times;
+		queue<int> brew_times;
+		queue<int> prices;
+		queue<int> customer_times;
 		
 		queue<int> createCashierQueue(int size){
 			queue<int> q;
@@ -26,7 +26,7 @@ class HUCofeeShop{
 			return q;
 		}
 		
-		void printQueue(queue<double> q)
+		void printQueue(queue<int> q)
 		{
 			//printing content of queue 
 			while (!q.empty()){
@@ -36,15 +36,6 @@ class HUCofeeShop{
 		
 		}
 		
-		void printIntQueue(queue<int> q)
-		{
-			//printing content of queue 
-			while (!q.empty()){
-				cout<<" "<<q.front();
-				q.pop();
-			}
-		
-		}
 		
 		void getInput(){
 		file.open("input.txt");
@@ -73,28 +64,40 @@ class HUCofeeShop{
 						    	case 0:
 								{
 									string arrival_time = s.c_str();
-						    		arrival_times.push(stod(arrival_time)); // stod - string to double
+									double arrival_time_seconds = stod(arrival_time);
+									int arrival_time_ms = (arrival_time_seconds + 0.001) * 100;
+									
+						    		arrival_times.push(arrival_time_ms); // stod - string to double
 						    		break;
 								}
 						    	
 						   		case 1:
 								   {
 						   			string order_time = s.c_str();
-						    		order_times.push(stod(order_time));
+						    		double order_time_seconds = stod(order_time);
+									int order_time_ms = (order_time_seconds + 0.001) * 100;
+									
+						    		order_times.push(order_time_ms); // stod - string to double
 						    		break;
 								   }
 								   
 								case 2:
 								   {
 						   			string brew_time = s.c_str();
-						    		brew_times.push(stod(brew_time));
+						    		double brew_time_seconds = stod(brew_time);
+									int brew_time_ms = (brew_time_seconds + 0.001) * 100;
+									
+						    		brew_times.push(brew_time_ms); // stod - string to double
 						    		break;
 								   }
 								
 								case 3:
 								   {
 						   			string price = s.c_str();
-						    		prices.push(stod(price));
+						    		double price_dollars = stod(price);
+									int price_cents = (price_dollars + 0.001) * 100;
+									
+						    		prices.push(price_cents); // stod - string to double
 						    		break;
 								   }
 							
@@ -105,6 +108,13 @@ class HUCofeeShop{
 			index++;
 		}
 		
+		printQueue(arrival_times);
+		cout << endl;
+		printQueue(order_times);
+		cout << endl;
+		printQueue(brew_times);
+		cout << endl;
+		printQueue(prices);
 		//cout << cashier << endl;
 		//cout << orders <<endl;
 		file.close();
@@ -114,7 +124,7 @@ class HUCofeeShop{
 			while (!arrival_times.empty()){
 				double customer_time = 0;
 				customer_time = customer_time + order_times.front();
-				customer_time = customer_time + brew_times.front();
+				//customer_time = customer_time + brew_times.front();
 				customer_time = customer_time - arrival_times.front();
 
 				order_times.pop();
@@ -126,18 +136,36 @@ class HUCofeeShop{
 			printQueue(customer_times);
 		}
 		
-		void matchCashiers(){
-			queue<int> cashierQueue = createCashierQueue(cashier);
-			printIntQueue(cashierQueue);
-		}
-};
+			void matchCashiers(){
+				queue<int> cashierQueue = createCashierQueue(cashier);
+				int ms = 0;
+				
+				while(ms<1000000){
+					
+					if(ms == arrival_times.front()){
+						cout << "cashier is full";
+						cashierQueue.pop();
+						arrival_times.pop();
+					}
+					
+					if(ms == (customer_times.front())){
+						cout << "cashier is free";
+						cashierQueue.push(1);
+						customer_times.pop();
+					}
+			
+					ms++;
+				
+				}
+			}
+	};
 
 	
 int main(){
 	
 	HUCofeeShop dataOrganizer;
 	dataOrganizer.getInput();
-	dataOrganizer.matchCashiers();
+	//dataOrganizer.matchCashiers();
 	//dataOrganizer.getCustomerTime();
 
 	
