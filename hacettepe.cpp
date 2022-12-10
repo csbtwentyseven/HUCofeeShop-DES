@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
-class IO{
+class HUCofeeShop{
 	public:
 		ifstream file;
 		string line;
@@ -15,8 +15,28 @@ class IO{
 		queue<double> order_times;
 		queue<double> brew_times;
 		queue<double> prices;
+		queue<double> customer_times;
+		
+		queue<int> createCashierQueue(int size){
+			queue<int> q;
+			for(int i = 0; i < size; i++){
+				q.push(i);
+			}
+			
+			return q;
+		}
 		
 		void printQueue(queue<double> q)
+		{
+			//printing content of queue 
+			while (!q.empty()){
+				cout<<" "<<q.front();
+				q.pop();
+			}
+		
+		}
+		
+		void printIntQueue(queue<int> q)
 		{
 			//printing content of queue 
 			while (!q.empty()){
@@ -81,29 +101,45 @@ class IO{
 							}
 							index++;
 						  }	
-		
 			}
 			index++;
 		}
 		
-		printQueue(arrival_times);
-		cout << endl;
-		printQueue(order_times);
-		cout << endl;
-		printQueue(brew_times);
-		cout <<endl;
-		printQueue(prices);
-		
 		//cout << cashier << endl;
 		//cout << orders <<endl;
 		file.close();
-	}	
+	}
+	
+		void getCustomerTime(){
+			while (!arrival_times.empty()){
+				double customer_time = 0;
+				customer_time = customer_time + order_times.front();
+				customer_time = customer_time + brew_times.front();
+				customer_time = customer_time - arrival_times.front();
+
+				order_times.pop();
+				brew_times.pop();
+				arrival_times.pop();
+				customer_times.push(customer_time);
+								
+			}
+			printQueue(customer_times);
+		}
+		
+		void matchCashiers(){
+			queue<int> cashierQueue = createCashierQueue(cashier);
+			printIntQueue(cashierQueue);
+		}
 };
 
+	
 int main(){
 	
-	IO dataOrganizer;
+	HUCofeeShop dataOrganizer;
 	dataOrganizer.getInput();
+	dataOrganizer.matchCashiers();
+	//dataOrganizer.getCustomerTime();
+
 	
 	return 0;
 }
